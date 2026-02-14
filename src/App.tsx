@@ -9,6 +9,7 @@ import {
   decryptIfNeeded,
   encryptIfNeeded,
 } from './crypto'
+import { setStoredMyId, setStoredPeerKey } from './storage'
 import type { Message } from './types'
 import './App.css'
 
@@ -67,6 +68,8 @@ export default function App() {
               )
             )
           : raw
+      setStoredMyId(form.myId)
+      if (peerPub) setStoredPeerKey(form.peerId, peerPub)
       setMessages(list)
       setInChat(true)
     } catch (e) {

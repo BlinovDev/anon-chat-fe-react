@@ -1,5 +1,6 @@
 .app {
   max-width: 480px;
+  width: 100%;
   margin: 0 auto;
   padding: 1rem;
 }
@@ -46,9 +47,63 @@
   flex-wrap: wrap;
 }
 
+.start-page .key-row button {
+  min-width: 11rem;
+  white-space: nowrap;
+}
+
 .start-page .key-display textarea {
   font-family: monospace;
   font-size: 0.8rem;
+}
+
+.saved-peers {
+  margin-bottom: 1rem;
+}
+
+.saved-peers-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.saved-peers-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.saved-peer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+}
+
+.saved-peer-id {
+  flex: 1;
+  font-size: 0.85rem;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-peer-join {
+  flex-shrink: 0;
+  min-width: 4rem;
+}
+
+.saved-peer-join:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .chat-page {
@@ -110,6 +165,13 @@
     border-color: #ccc;
     background: #fff;
     color: #213547;
+  }
+  .saved-peer-item {
+    background: #f5f5f5;
+    border-color: #ddd;
+  }
+  .saved-peers-title {
+    color: rgba(0, 0, 0, 0.7);
   }
   .chat-page .message.sent {
     background: #c5d9ed;
