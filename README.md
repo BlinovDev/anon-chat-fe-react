@@ -1,74 +1,25 @@
-# React + TypeScript + Vite
+# Anon Chat (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimal anonymous chat client with **client-side end-to-end encryption**. All crypto runs in the browser; the server only stores and delivers opaque payloads.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Anonymous messaging** — Identify by UUID only; no sign-up or auth.
+- **E2E encryption** — Optional ECDH P-256 + AES-256-GCM; keys never leave the device.
+- **Saved chats** — Store peer UUID + public key for quick re-join; delete individual chats (3s hover → Delete).
+- **Profile** — Set your UUID, create or import key pair, copy public key to share.
+- **Account backup** — Export/import account file (UUID, key pair, saved chats) to restore on another device or browser.
+- **Clear-all** — 5s hover on the app title reveals a button to wipe all local data and reload.
 
-## React Compiler
+## Backend
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This frontend is designed to work with **[skrzynka](https://github.com/BlinovDev/skrzynka)** — a stateless message transport that issues anonymous IDs, stores encrypted payloads, and delivers messages over HTTP + WebSocket. No server-side crypto; security is entirely client-side.
 
-## Expanding the ESLint configuration
+## Run
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-# anon-chat-fe-react
+Set `VITE_API_BASE` (e.g. in `.env`) to your skrzynka server URL (default: `http://localhost:8080`).
