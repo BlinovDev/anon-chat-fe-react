@@ -1,20 +1,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getDialog, sendMessage, connectWs } from './api'
-import { StartPage, type StartForm } from './StartPage'
+import { StartPage } from './StartPage'
+import { AddChatPage } from './AddChatPage'
+import { ProfilePage } from './ProfilePage'
 import { ChatPage } from './ChatPage'
 import {
-  generateKeyPair,
   getMyPublicKeyJwk,
   getStoredPrivateKeyJwk,
   decryptIfNeeded,
   encryptIfNeeded,
 } from './crypto'
-import { setStoredMyId, setStoredPeerKey } from './storage'
+import { getStoredMyId, setStoredMyId, setStoredPeerKey } from './storage'
 import type { Message } from './types'
+import type { StartForm } from './types'
 import './App.css'
 
+type View = 'start' | 'add-chat' | 'profile' | 'chat'
+
 export default function App() {
-  const [inChat, setInChat] = useState(false)
+  const [view, setView] = useState<View>('start')
   const [myId, setMyId] = useState('')
   const [peerId, setPeerId] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
@@ -23,21 +27,11 @@ export default function App() {
   const [myPublicKey, setMyPublicKey] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const handleCreateKeyPair = useCallback(async () => {
-    setError(null)
-    try {
-      const { publicKeyJwk } = await generateKeyPair()
-      setMyPublicKey(publicKeyJwk)
-      return publicKeyJwk
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Key generation failed')
-      return ''
-    }
-  }, [])
-
   useEffect(() => {
-    if (!inChat) getMyPublicKeyJwk().then(setMyPublicKey)
-  }, [inChat])
+    if (view !== 'chat') {
+      getMyPublicKeyJwk().then(setMyPublicKey)
+    }
+  }, [view])
 
   const handleStart = useCallback(async (form: StartForm) => {
     setError(null)
@@ -49,7 +43,7 @@ export default function App() {
     if (useEncryption) {
       priv = await getStoredPrivateKeyJwk()
       if (!priv) {
-        setError('Create encryption key pair first')
+        setError('Create encryption key pair in Profile first')
         return
       }
       setMyPrivateJwk(priv)
@@ -71,14 +65,28 @@ export default function App() {
       setStoredMyId(form.myId)
       if (peerPub) setStoredPeerKey(form.peerId, peerPub)
       setMessages(list)
-      setInChat(true)
+      setView('chat')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to start')
     }
   }, [])
 
+  const handleJoinChat = useCallback(
+    (peerId: string, peerPublicKeyJwk: string) => {
+      const storedMyId = getStoredMyId()
+      if (!storedMyId.trim()) return
+      handleStart({
+        myId: storedMyId.trim(),
+        peerId,
+        peerPublicKeyJwk,
+        myPublicKeyJwk: myPublicKey ?? undefined,
+      })
+    },
+    [handleStart, myPublicKey]
+  )
+
   useEffect(() => {
-    if (!inChat || !myId) return
+    if (view !== 'chat' || !myId) return
     const priv = myPrivateJwk
     const peerPub = peerPublicJwk
     const close = connectWs(myId, (msg) => {
@@ -94,7 +102,7 @@ export default function App() {
       }
     })
     return close
-  }, [inChat, myId, peerId, myPrivateJwk, peerPublicJwk])
+  }, [view, myId, peerId, myPrivateJwk, peerPublicJwk])
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -121,8 +129,8 @@ export default function App() {
     [myId, peerId, myPrivateJwk, peerPublicJwk]
   )
 
-  const handleBack = useCallback(() => {
-    setInChat(false)
+  const handleBackFromChat = useCallback(() => {
+    setView('start')
     setMessages([])
     setMyPrivateJwk(null)
     setPeerPublicJwk(null)
@@ -132,19 +140,33 @@ export default function App() {
   return (
     <div className="app">
       {error && <div className="error">{error}</div>}
-      {inChat ? (
+      {view === 'chat' && (
         <ChatPage
           myId={myId}
           peerId={peerId}
           messages={messages}
           onSend={handleSend}
-          onBack={handleBack}
+          onBack={handleBackFromChat}
         />
-      ) : (
+      )}
+      {view === 'start' && (
         <StartPage
+          onJoinChat={handleJoinChat}
+          onAddNewChat={() => { setError(null); setView('add-chat') }}
+          onOpenProfile={() => { setError(null); setView('profile') }}
+        />
+      )}
+      {view === 'add-chat' && (
+        <AddChatPage
           onStart={handleStart}
-          onCreateKeyPair={handleCreateKeyPair}
           myPublicKey={myPublicKey ?? undefined}
+          onBack={() => { setError(null); setView('start') }}
+        />
+      )}
+      {view === 'profile' && (
+        <ProfilePage
+          onBack={() => { setError(null); setView('start') }}
+          onKeyPairChanged={(key) => setMyPublicKey(key)}
         />
       )}
     </div>

@@ -149,6 +149,11 @@ async function saveKeyPair(publicKeyJwk: string, privateKeyJwk: string): Promise
   })
 }
 
+/** Import and store an existing key pair (JSON strings). */
+export async function importKeyPair(publicKeyJwk: string, privateKeyJwk: string): Promise<void> {
+  await saveKeyPair(publicKeyJwk.trim(), privateKeyJwk.trim())
+}
+
 async function getStoredKeyPair(): Promise<string | null> {
   const db = await openDb()
   return new Promise((resolve, reject) => {
@@ -168,4 +173,18 @@ export async function getStoredPrivateKeyJwk(): Promise<string | null> {
   if (!raw) return null
   const { privateKeyJwk } = JSON.parse(raw) as { publicKeyJwk: string; privateKeyJwk: string }
   return privateKeyJwk
+}
+
+/** Clears the stored key pair from IndexedDB. */
+export async function clearStoredKeyPair(): Promise<void> {
+  const db = await openDb()
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('keys', 'readwrite')
+    tx.objectStore('keys').delete(KEY_PAIR_ID)
+    tx.oncomplete = () => {
+      db.close()
+      resolve()
+    }
+    tx.onerror = () => reject(tx.error)
+  })
 }

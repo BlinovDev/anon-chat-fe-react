@@ -11,13 +11,10 @@
   margin-bottom: 0.5rem;
 }
 
-.start-page h1,
-.chat-page header span {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
+/* Shared form and inputs */
 .start-page .form,
+.add-chat-page .form,
+.profile-page .form,
 .chat-page .messages {
   display: flex;
   flex-direction: column;
@@ -25,6 +22,8 @@
 }
 
 .start-page label,
+.add-chat-page label,
+.profile-page label,
 .chat-page form {
   display: flex;
   flex-direction: column;
@@ -33,6 +32,10 @@
 
 .start-page input[type="text"],
 .start-page textarea,
+.add-chat-page input[type="text"],
+.add-chat-page textarea,
+.profile-page input[type="text"],
+.profile-page textarea,
 .chat-page input[type="text"] {
   padding: 0.5rem;
   border-radius: 6px;
@@ -41,20 +44,157 @@
   color: inherit;
 }
 
-.start-page .key-row {
+.start-page .key-row,
+.profile-page .key-row {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.start-page .key-row button {
+.start-page .key-row button,
+.profile-page .key-row button {
   min-width: 11rem;
   white-space: nowrap;
 }
 
-.start-page .key-display textarea {
+.start-page .key-display textarea,
+.profile-page .key-display textarea {
   font-family: monospace;
   font-size: 0.8rem;
+}
+
+.start-page h1,
+.chat-page header span {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Start page */
+.start-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.start-page-header h1 {
+  margin: 0;
+}
+
+.start-page-title-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.clear-data-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  background: rgba(229, 115, 115, 0.2);
+  border: 1px solid #e57373;
+  color: #e57373;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.clear-data-btn:hover {
+  background: rgba(229, 115, 115, 0.35);
+}
+
+.start-page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.87);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #646cff;
+}
+
+.header-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.saved-peers-empty {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  margin: 0 0 1rem 0;
+}
+
+/* Page header (Add chat, Profile) */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: -0.25rem 0 0 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.form-actions button:last-child {
+  margin-left: auto;
+}
+
+/* Profile page */
+.profile-section {
+  margin-top: 1rem;
+}
+
+.account-backup-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hidden-file-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.profile-section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .saved-peers {
@@ -104,6 +244,18 @@
 .saved-peer-join:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.saved-peer-delete {
+  flex-shrink: 0;
+  min-width: 4rem;
+  background: rgba(229, 115, 115, 0.2);
+  border: 1px solid #e57373;
+  color: #e57373;
+}
+
+.saved-peer-delete:hover {
+  background: rgba(229, 115, 115, 0.35);
 }
 
 .chat-page {
@@ -161,6 +313,10 @@
 @media (prefers-color-scheme: light) {
   .start-page input[type="text"],
   .start-page textarea,
+  .add-chat-page input[type="text"],
+  .add-chat-page textarea,
+  .profile-page input[type="text"],
+  .profile-page textarea,
   .chat-page input[type="text"] {
     border-color: #ccc;
     background: #fff;
@@ -172,6 +328,36 @@
   }
   .saved-peers-title {
     color: rgba(0, 0, 0, 0.7);
+  }
+  .saved-peer-delete {
+    background: rgba(180, 60, 60, 0.15);
+    border-color: #b43c3c;
+    color: #b43c3c;
+  }
+  .saved-peer-delete:hover {
+    background: rgba(180, 60, 60, 0.25);
+  }
+  .header-icon-btn {
+    color: #213547;
+  }
+  .header-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #535bf2;
+  }
+  .clear-data-btn {
+    background: rgba(180, 60, 60, 0.15);
+    border-color: #b43c3c;
+    color: #b43c3c;
+  }
+  .clear-data-btn:hover {
+    background: rgba(180, 60, 60, 0.25);
+  }
+  .saved-peers-empty,
+  .form-hint {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .profile-section-title {
+    color: rgba(0, 0, 0, 0.85);
   }
   .chat-page .message.sent {
     background: #c5d9ed;

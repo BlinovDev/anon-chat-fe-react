@@ -47,3 +47,37 @@ export function setStoredPeerKey(peerId: string, peerPublicKeyJwk: string): void
     // ignore
   }
 }
+
+/** Removes a single peer from stored peer keys. */
+export function removeStoredPeerKey(peerId: string): void {
+  try {
+    const key = peerId.trim()
+    if (!key) return
+    const map = getStoredPeerKeys()
+    delete map[key]
+    localStorage.setItem(PEER_KEYS_KEY, JSON.stringify(map))
+  } catch {
+    // ignore
+  }
+}
+
+/** Replaces all stored peer keys (e.g. when restoring from account file). */
+export function setStoredPeerKeys(peerKeys: PeerKeysMap): void {
+  try {
+    if (peerKeys && typeof peerKeys === 'object' && !Array.isArray(peerKeys)) {
+      localStorage.setItem(PEER_KEYS_KEY, JSON.stringify(peerKeys))
+    }
+  } catch {
+    // ignore
+  }
+}
+
+/** Clears UUID and saved peer keys from localStorage. */
+export function clearAllLocalData(): void {
+  try {
+    localStorage.removeItem(MY_ID_KEY)
+    localStorage.removeItem(PEER_KEYS_KEY)
+  } catch {
+    // ignore
+  }
+}

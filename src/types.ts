@@ -11,3 +11,10 @@ export interface CreateMessageBody {
   recipient_id: string
   payload: string
 }
+
+export interface StartForm {
+  myId: string
+  peerId: string
+  myPublicKeyJwk?: string
+  peerPublicKeyJwk?: string
+}
